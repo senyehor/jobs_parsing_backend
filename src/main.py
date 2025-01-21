@@ -1,6 +1,6 @@
-from typing import Iterable
+from typing import Annotated, Iterable
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from httpx import AsyncClient
 
 from src.parsing.logic.parsing import GenTechJobParser
@@ -11,9 +11,11 @@ app = FastAPI()
 
 
 @app.get("/")
-async def root() -> Iterable[JobPosting]:
+async def root(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPosting]:
     async with AsyncClient() as client:
         url = 'https://gen-tech.breezy.hr/'
         html = await fetch_html(url, client)
-        parser = GenTechJobParser(html, 'Genesis', ('python',), url)
+        if isinstance(keywords, str):
+            keywords = (keywords,)
+        parser = GenTechJobParser(html, 'Genesis', keywords, url)
         return parser.get_jobs()
