@@ -1,6 +1,6 @@
-class ExceptionWithMessageBase(Exception):
+class ExceptionWithMessageForUser(Exception):
     message: str = None
-    message_for_user: str = "An unexpected error occurred"
+    message_for_user: str = 'An unexpected error occurred'
 
     def __init__(self, message=None, message_for_user=None):
         super().__init__(self.message or message)
