@@ -22,12 +22,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-async def root(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPosting]:
+
+@app.get("/api/get-jobs")
+async def root(keyword: Annotated[list[str] | str, Query()]) -> Iterable[JobPosting]:
     async with AsyncClient() as client:
         url = 'https://gen-tech.breezy.hr/'
         html = await fetch_html(url, client)
-        if isinstance(keywords, str):
-            keywords = (keywords,)
-        parser = GenTechJobParser(html, 'Genesis', keywords, url)
+        if isinstance(keyword, str):
+            keyword = (keyword,)
+        parser = GenTechJobParser(html, 'Genesis', keyword, url)
         return parser.get_jobs()
