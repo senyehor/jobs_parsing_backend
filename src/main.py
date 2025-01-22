@@ -1,14 +1,26 @@
 from typing import Annotated, Iterable
 
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient
 
 from src.parsing.logic.parsing import GenTechJobParser
 from src.parsing.logic.querying import fetch_html
 from src.parsing.models import JobPosting
 
+origins = [
+    "http://localhost:3000",
+]
+
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPosting]:
