@@ -10,4 +10,4 @@ class JobPosting(BaseModel):
     company_name: str
     location: str | None | Iterable[str] = None
     employment_type: str
-    posted_at: datetime | None = None
+    posted_at: datetime | None | str = None
