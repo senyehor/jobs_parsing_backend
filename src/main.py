@@ -38,8 +38,8 @@ async def root(keyword: Annotated[list[str] | str, Query()]) -> Iterable[JobPost
 
 
 @app.get('/api/dou-by-category')
-async def dou(category: str) -> Iterable[JobPosting]:
-    url = f'https://jobs.dou.ua/vacancies/?category={category}'  # todo handle non-existent
+async def dou(keyword: str) -> Iterable[JobPosting]:
+    url = f'https://jobs.dou.ua/vacancies/?category={keyword}'  # todo handle non-existent
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     try:
         scraper = DouSeleniumScraper(url, driver)
