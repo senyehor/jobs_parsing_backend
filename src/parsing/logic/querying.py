@@ -1,3 +1,5 @@
+from asyncio import sleep
+
 from httpx import AsyncClient, HTTPStatusError, RequestError
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
@@ -23,12 +25,13 @@ class DouSeleniumScraper:
         self.__url = url
         self.__driver = driver
 
-    def fetch_html(self):
+    async def fetch_html(self):
+        self.__driver.delete_all_cookies()
         self.__driver.get(self.__url)
-        self.__click_load_more_jobs()
+        await self.__click_load_more_jobs()
         return self.__driver.page_source
 
-    def __click_load_more_jobs(self):
+    async def __click_load_more_jobs(self):
         while True:
             try:
                 load_more_button = WebDriverWait(self.__driver, 10).until(
@@ -38,6 +41,9 @@ class DouSeleniumScraper:
                 )
                 if load_more_button.is_displayed():
                     load_more_button.click()
+                    # give the browser some time to render,
+                    # clicks on a job posting otherwise
+                    await sleep(1)
                 else:
                     break
 

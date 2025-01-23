@@ -81,3 +81,42 @@ class GenTechJobParser:
             if keyword.lower() in title.lower():
                 return True
         return False
+
+
+class DouParser:
+    def __init__(
+            self, page_html: str,
+            job_title_keywords: Iterable[str]
+    ):
+        self.__soup = BeautifulSoup(page_html, 'html.parser')
+        self.__keywords = job_title_keywords
+
+    def get_jobs(self) -> Iterable[JobPosting]:
+        try:
+            return self.__parse()
+        except Exception as e:
+            raise ExceptionWithMessageForUser(
+                message_for_user='Encountered unexpected error while parsing jobs'
+            ) from e
+
+    def __parse(self):
+        jobs_div = self.__soup.find('div', id='vacancyListId')
+        jobs = jobs_div.find_all('li', class_='l-vacancy')
+        jobs_list = []
+        for job in jobs:
+            title_div = job.find('div', class_='title')
+            job_title = title_div.find('a').text
+            job_link = title_div.find('a').get('href')
+            date_posted = job.find('div', class_='date').text
+            location = job.find('span', class_='cities').text.split(', ')
+            company_name = job.find('a', class_='company').get_text(strip=True)
+            jobs_list.append(
+                JobPosting(
+                    link=job_link,
+                    company_name=company_name,
+                    job_title=job_title,
+                    location=location,
+                    posted_at=date_posted
+                )
+            )
+        return jobs_list
