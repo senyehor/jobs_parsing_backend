@@ -1,6 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 from typing import Iterable
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup, Tag
 
@@ -50,7 +51,7 @@ class GenTechJobParser(JobParserWithTitleFiltering):
             employment_type = self.__extract_employment_type(last_a_tag)
             jobs.append(
                 JobPosting(
-                    link=self.__BASE_URL.rstrip('/') + href_to_job,
+                    link=urljoin(self.__BASE_URL, href_to_job),
                     job_title=job_title,
                     company_name=self.__COMPANY_NAME,
                     location=location,
