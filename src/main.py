@@ -38,13 +38,18 @@ async def root(keyword: Annotated[list[str] | str, Query()]) -> Iterable[JobPost
 
 
 @app.get('/api/dou-by-category')
-async def dou(keyword: str) -> Iterable[JobPosting]:
-    url = f'https://jobs.dou.ua/vacancies/?category={keyword}'  # todo handle non-existent
+async def dou(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPosting]:
+    url = f'https://jobs.dou.ua/vacancies/'
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    if isinstance(keywords, str):
+        keywords = (keywords,)
     try:
-        scraper = DouSeleniumScraper(url, driver)
-        html = await scraper.fetch_html()
-        parser = DouParser(html, ('Python',))
-        return parser.get_jobs()
+        scraper = DouSeleniumScraper(url=url, driver=driver, keywords=keywords)
+        htmls = await scraper.scrape()
+        jobs = []
+        for html in htmls:
+            parser = DouParser(html, ('Python', 'Java'))
+            jobs.extend(parser.get_jobs())
+        return jobs
     finally:
         driver.quit()
