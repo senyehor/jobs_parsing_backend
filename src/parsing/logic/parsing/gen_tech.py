@@ -1,28 +1,11 @@
 import re
-from abc import ABC, abstractmethod
 from typing import Iterable
 from urllib.parse import urljoin
 
-from bs4 import BeautifulSoup, Tag
+from bs4 import Tag
 
+from src.parsing.logic.parsing.bases import JobParserWithTitleFiltering
 from src.parsing.models import JobPosting
-
-
-class JobParser(ABC):
-
-    def __init__(self, html: str) -> None:
-        self._soup = BeautifulSoup(html, 'html.parser')
-
-    @abstractmethod
-    def parse_jobs(self) -> Iterable[JobPosting]:
-        pass
-
-
-class JobParserWithTitleFiltering(JobParser, ABC):
-
-    def __init__(self, html: str, title_filtering_keywords: Iterable[str]) -> None:
-        super().__init__(html)
-        self._keywords = title_filtering_keywords
 
 
 class GenTechJobParser(JobParserWithTitleFiltering):
@@ -83,28 +66,3 @@ class GenTechJobParser(JobParserWithTitleFiltering):
             if keyword.lower() in title.lower():
                 return True
         return False
-
-
-class DouParser(JobParser):
-
-    def parse_jobs(self) -> Iterable[JobPosting]:
-        jobs_div = self._soup.find('div', id='vacancyListId')
-        jobs = jobs_div.find_all('li', class_='l-vacancy')
-        jobs_list = []
-        for job in jobs:
-            title_div = job.find('div', class_='title')
-            job_title = title_div.find('a').text
-            job_link = title_div.find('a').get('href')
-            date_posted = job.find('div', class_='date').text
-            location = job.find('span', class_='cities').text.split(', ')
-            company_name = job.find('a', class_='company').get_text(strip=True)
-            jobs_list.append(
-                JobPosting(
-                    link=job_link,
-                    company_name=company_name,
-                    job_title=job_title,
-                    location=location,
-                    posted_at=date_posted
-                )
-            )
-        return jobs_list
