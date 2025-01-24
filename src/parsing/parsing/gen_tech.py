@@ -4,8 +4,8 @@ from urllib.parse import urljoin
 
 from bs4 import Tag
 
-from src.parsing.logic.parsing.bases import JobParserWithTitleFiltering
 from src.parsing.models import JobPosting
+from src.parsing.parsing.bases import JobParserWithTitleFiltering
 
 
 class GenTechJobParser(JobParserWithTitleFiltering):
