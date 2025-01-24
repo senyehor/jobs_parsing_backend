@@ -4,7 +4,6 @@ from typing import Iterable
 
 from bs4 import BeautifulSoup, Tag
 
-from src.exceptions import ExceptionWithMessageForUser
 from src.parsing.models import JobPosting
 
 
@@ -85,24 +84,10 @@ class GenTechJobParser(JobParserWithTitleFiltering):
         return False
 
 
-class DouParser:
-    def __init__(
-            self, page_html: str,
-            job_title_keywords: Iterable[str]
-    ):
-        self.__soup = BeautifulSoup(page_html, 'html.parser')
-        self.__keywords = job_title_keywords
+class DouParser(JobParser):
 
-    def get_jobs(self) -> Iterable[JobPosting]:
-        try:
-            return self.__parse()
-        except Exception as e:
-            raise ExceptionWithMessageForUser(
-                message_for_user='Encountered unexpected error while parsing jobs'
-            ) from e
-
-    def __parse(self):
-        jobs_div = self.__soup.find('div', id='vacancyListId')
+    def parse_jobs(self) -> Iterable[JobPosting]:
+        jobs_div = self._soup.find('div', id='vacancyListId')
         jobs = jobs_div.find_all('li', class_='l-vacancy')
         jobs_list = []
         for job in jobs:

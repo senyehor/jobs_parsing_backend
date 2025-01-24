@@ -46,10 +46,12 @@ async def dou(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPost
     try:
         scraper = DouSeleniumScraper(url=url, driver=driver, keywords=keywords)
         htmls = await scraper.scrape()
+        if isinstance(htmls, str):
+            htmls = (htmls,)
         jobs = []
         for html in htmls:
-            parser = DouParser(html, ('Python', 'Java'))
-            jobs.extend(parser.get_jobs())
+            parser = DouParser(html)
+            jobs.extend(parser.parse_jobs())
         return jobs
     finally:
         driver.quit()
