@@ -1,4 +1,5 @@
 import re
+from abc import ABC, abstractmethod
 from typing import Iterable
 
 from bs4 import BeautifulSoup, Tag
@@ -7,36 +8,37 @@ from src.exceptions import ExceptionWithMessageForUser
 from src.parsing.models import JobPosting
 
 
-class GenTechJobParser:
+class JobParser(ABC):
+
+    def __init__(self, html: str) -> None:
+        self._soup = BeautifulSoup(html, 'html.parser')
+
+    @abstractmethod
+    def parse_jobs(self) -> Iterable[JobPosting]:
+        pass
+
+
+class JobParserWithTitleFiltering(JobParser, ABC):
+
+    def __init__(self, html: str, title_filtering_keywords: Iterable[str]) -> None:
+        super().__init__(html)
+        self._keywords = title_filtering_keywords
+
+
+class GenTechJobParser(JobParserWithTitleFiltering):
     __LOCATION_CODES_MAPPING = {
         '%LABEL_POSITION_TYPE_REMOTE_ANY%':    'remote',
         '%LABEL_POSITION_TYPE_REMOTE_WITHIN%': 'remote within location'
     }
-
     __EMPLOYMENT_TYPES_MAPPING = {
         '%LABEL_POSITION_TYPE_FULL_TIME%': 'full-time',
         '%LABEL_POSITION_TYPE_PART_TIME%': 'part-time',
     }
+    __COMPANY_NAME = 'Genesis'
+    __BASE_URL = 'https://gen-tech.breezy.hr/'
 
-    def __init__(
-            self, page_html: str, company_name: str,
-            job_title_keywords: Iterable[str], base_url: str
-    ):
-        self.__soup = BeautifulSoup(page_html, 'html.parser')
-        self.__keywords = job_title_keywords
-        self.__company_name = company_name
-        self.__base_url = base_url
-
-    def get_jobs(self) -> Iterable[JobPosting]:
-        try:
-            return self.__parse()
-        except Exception as e:
-            raise ExceptionWithMessageForUser(
-                message_for_user='Encountered unexpected error while parsing jobs'
-            ) from e
-
-    def __parse(self):
-        positions_container = self.__soup.find('div', class_='positions-container')
+    def parse_jobs(self) -> Iterable[JobPosting]:
+        positions_container = self._soup.find('div', class_='positions-container')
         jobs_containers = positions_container.find_all('li', class_='position transition')
         jobs = []
         for job in jobs_containers:
@@ -49,9 +51,9 @@ class GenTechJobParser:
             employment_type = self.__extract_employment_type(last_a_tag)
             jobs.append(
                 JobPosting(
-                    link=self.__base_url.rstrip('/') + href_to_job,
+                    link=self.__BASE_URL.rstrip('/') + href_to_job,
                     job_title=job_title,
-                    company_name=self.__company_name,
+                    company_name=self.__COMPANY_NAME,
                     location=location,
                     employment_type=employment_type
                 )
@@ -77,7 +79,7 @@ class GenTechJobParser:
         return employment_type
 
     def __check_title_for_keywords(self, title: str) -> bool:
-        for keyword in self.__keywords:
+        for keyword in self._keywords:
             if keyword.lower() in title.lower():
                 return True
         return False
