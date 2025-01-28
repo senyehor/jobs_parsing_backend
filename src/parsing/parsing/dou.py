@@ -1,7 +1,7 @@
 from typing import Iterable
 
 from src.parsing.models import JobPosting
-from src.parsing.parsing.bases import JobParser
+from src.parsing.parsing_bases import JobParser
 
 
 class DouParser(JobParser):
