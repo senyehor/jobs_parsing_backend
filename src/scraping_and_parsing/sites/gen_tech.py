@@ -10,7 +10,7 @@ from src.scraping_and_parsing.scraping_bases import HttpxScraperBase
 from src.scraping_and_parsing.sites.site_base import SiteBase
 
 
-class GenTechJobParser(JobParserWithTitleFiltering):
+class GenesisParser(JobParserWithTitleFiltering):
     __LOCATION_CODES_MAPPING = {
         '%LABEL_POSITION_TYPE_REMOTE_ANY%':    'remote',
         '%LABEL_POSITION_TYPE_REMOTE_WITHIN%': 'remote within location'
@@ -70,12 +70,12 @@ class GenTechJobParser(JobParserWithTitleFiltering):
         return False
 
 
-class GenTechScraper(HttpxScraperBase):
+class GenesisScraper(HttpxScraperBase):
     pass
 
 
 class GenTech(SiteBase):
     site_name = 'Genesis'
     base_url = 'https://gen-tech.breezy.hr/'
-    scraper = GenTechScraper
-    parser = GenTechJobParser
+    scraper = GenesisScraper
+    parser = GenesisParser

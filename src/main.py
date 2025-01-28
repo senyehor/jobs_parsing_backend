@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.sites.dou import DouParser, DouSeleniumScraper
-from src.scraping_and_parsing.sites.gen_tech import GenTechJobParser, GenTechScraper
+from src.scraping_and_parsing.sites.gen_tech import GenesisParser, GenesisScraper
 
 origins = [
     "http://localhost:3000",
@@ -32,9 +32,9 @@ async def root(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPos
         url = 'https://gen-tech.breezy.hr/'
         if isinstance(keywords, str):
             keywords = (keywords,)
-        scraper = GenTechScraper(client, url, keywords)
+        scraper = GenesisScraper(client, url, keywords)
         html = await scraper.scrape()
-        parser = GenTechJobParser(html, keywords)
+        parser = GenesisParser(html, keywords)
         return parser.parse_jobs()
 
 
