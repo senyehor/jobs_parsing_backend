@@ -6,6 +6,7 @@ from bs4 import Tag
 
 from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.parsing_bases import JobParserWithTitleFiltering
+from src.scraping_and_parsing.scraping_bases import HttpxScraperBase
 
 
 class GenTechJobParser(JobParserWithTitleFiltering):
@@ -66,3 +67,7 @@ class GenTechJobParser(JobParserWithTitleFiltering):
             if keyword.lower() in title.lower():
                 return True
         return False
+
+
+class GenTechScraper(HttpxScraperBase):
+    pass

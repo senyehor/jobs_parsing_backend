@@ -8,9 +8,8 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 from src.scraping_and_parsing.models import JobPosting
-from src.scraping_and_parsing.parsing import DouParser, GenTechJobParser
-from src.scraping_and_parsing.scraping.dou import DouSeleniumScraper
-from src.scraping_and_parsing.scraping.gen_tech import GenTechScraper
+from src.scraping_and_parsing.sites.dou import DouParser, DouSeleniumScraper
+from src.scraping_and_parsing.sites.gen_tech import GenTechJobParser, GenTechScraper
 
 origins = [
     "http://localhost:3000",

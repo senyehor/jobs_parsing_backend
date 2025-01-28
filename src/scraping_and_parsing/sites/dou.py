@@ -6,7 +6,34 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+from src.scraping_and_parsing.models import JobPosting
+from src.scraping_and_parsing.parsing_bases import JobParser
 from src.scraping_and_parsing.scraping_bases import SeleniumScraperBase
+
+
+class DouParser(JobParser):
+
+    def parse_jobs(self) -> Iterable[JobPosting]:
+        jobs_div = self._soup.find('div', id='vacancyListId')
+        jobs = jobs_div.find_all('li', class_='l-vacancy')
+        jobs_list = []
+        for job in jobs:
+            title_div = job.find('div', class_='title')
+            job_title = title_div.find('a').text
+            job_link = title_div.find('a').get('href')
+            date_posted = job.find('div', class_='date').text
+            location = job.find('span', class_='cities').text.split(', ')
+            company_name = job.find('a', class_='company').get_text(strip=True)
+            jobs_list.append(
+                JobPosting(
+                    link=job_link,
+                    company_name=company_name,
+                    job_title=job_title,
+                    location=location,
+                    posted_at=date_posted
+                )
+            )
+        return jobs_list
 
 
 class DouSeleniumScraper(SeleniumScraperBase):
