@@ -7,10 +7,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from src.parsing.models import JobPosting
-from src.parsing.parsing import DouParser, GenTechJobParser
-from src.parsing.scraping.dou import DouSeleniumScraper
-from src.parsing.scraping.gen_tech import GenTechScraper
+from src.scraping_and_parsing.models import JobPosting
+from src.scraping_and_parsing.parsing import DouParser, GenTechJobParser
+from src.scraping_and_parsing.scraping.dou import DouSeleniumScraper
+from src.scraping_and_parsing.scraping.gen_tech import GenTechScraper
 
 origins = [
     "http://localhost:3000",

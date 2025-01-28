@@ -3,7 +3,7 @@ from typing import Iterable
 
 from bs4 import BeautifulSoup
 
-from src.parsing.models import JobPosting
+from src.scraping_and_parsing.models import JobPosting
 
 
 class JobParser(ABC):
