@@ -7,10 +7,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from src.parsing.logic.querying import fetch_html
 from src.parsing.models import JobPosting
 from src.parsing.parsing import DouParser, GenTechJobParser
 from src.parsing.scraping.dou import DouSeleniumScraper
+from src.parsing.scraping.gen_tech import GenTechScraper
 
 origins = [
     "http://localhost:3000",
@@ -31,9 +31,10 @@ app.add_middleware(
 async def root(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPosting]:
     async with AsyncClient() as client:
         url = 'https://gen-tech.breezy.hr/'
-        html = await fetch_html(url, client)
         if isinstance(keywords, str):
             keywords = (keywords,)
+        scraper = GenTechScraper(client, url, keywords)
+        html = await scraper.scrape()
         parser = GenTechJobParser(html, keywords)
         return parser.parse_jobs()
 
