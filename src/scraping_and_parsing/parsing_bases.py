@@ -12,12 +12,5 @@ class JobParser(ABC):
         self._soup = BeautifulSoup(html, 'html.parser')
 
     @abstractmethod
-    def parse_jobs(self) -> Iterable[JobPosting]:
+    def parse_jobs(self, keywords: Iterable[str] | None = None) -> Iterable[JobPosting]:
         pass
-
-
-class JobParserWithTitleFiltering(JobParser, ABC):
-
-    def __init__(self, html: str, title_filtering_keywords: Iterable[str]) -> None:
-        super().__init__(html)
-        self._keywords = title_filtering_keywords

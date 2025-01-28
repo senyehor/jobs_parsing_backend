@@ -14,7 +14,7 @@ from src.scraping_and_parsing.sites.site_base import SiteBase
 
 class DouParser(JobParser):
 
-    def parse_jobs(self) -> Iterable[JobPosting]:
+    def parse_jobs(self, keywords: Iterable[str] | None = None) -> Iterable[JobPosting]:
         jobs_div = self._soup.find('div', id='vacancyListId')
         jobs = jobs_div.find_all('li', class_='l-vacancy')
         jobs_list = []

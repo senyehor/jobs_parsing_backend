@@ -5,12 +5,12 @@ from urllib.parse import urljoin
 from bs4 import Tag
 
 from src.scraping_and_parsing.models import JobPosting
-from src.scraping_and_parsing.parsing_bases import JobParserWithTitleFiltering
+from src.scraping_and_parsing.parsing_bases import JobParser
 from src.scraping_and_parsing.scraping_bases import HttpxScraperBase
 from src.scraping_and_parsing.sites.site_base import SiteBase
 
 
-class GenesisParser(JobParserWithTitleFiltering):
+class GenesisParser(JobParser):
     __LOCATION_CODES_MAPPING = {
         '%LABEL_POSITION_TYPE_REMOTE_ANY%':    'remote',
         '%LABEL_POSITION_TYPE_REMOTE_WITHIN%': 'remote within location'
@@ -22,14 +22,14 @@ class GenesisParser(JobParserWithTitleFiltering):
     __COMPANY_NAME = 'Genesis'
     __BASE_URL = 'https://gen-tech.breezy.hr/'
 
-    def parse_jobs(self) -> Iterable[JobPosting]:
+    def parse_jobs(self, keywords: Iterable[str] | None = None) -> Iterable[JobPosting]:
         positions_container = self._soup.find('div', class_='positions-container')
         jobs_containers = positions_container.find_all('li', class_='position transition')
         jobs = []
         for job in jobs_containers:
             last_a_tag = job.find_all('a')[-1]
             job_title = last_a_tag.find(re.compile(r'h[1-6]')).text.strip()
-            if not self.__check_title_for_keywords(job_title):
+            if not self.__check_title_for_keywords(job_title, keywords or []):
                 continue
             href_to_job = last_a_tag.get('href')
             location = self.__extract_location(last_a_tag)
@@ -63,8 +63,8 @@ class GenesisParser(JobParserWithTitleFiltering):
             employment_type = self.__EMPLOYMENT_TYPES_MAPPING[employment_type]
         return employment_type
 
-    def __check_title_for_keywords(self, title: str) -> bool:
-        for keyword in self._keywords:
+    def __check_title_for_keywords(self, title: str, keywords: Iterable[str]) -> bool:
+        for keyword in keywords:
             if keyword.lower() in title.lower():
                 return True
         return False
