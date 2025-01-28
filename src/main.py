@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.sites.dou import DouParser, DouSeleniumScraper
-from src.scraping_and_parsing.sites.gen_tech import GenesisParser, GenesisScraper
+from src.scraping_and_parsing.sites.genesis import GenesisParser, GenesisScraper
 
 origins = [
     "http://localhost:3000",

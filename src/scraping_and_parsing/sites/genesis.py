@@ -74,7 +74,7 @@ class GenesisScraper(HttpxScraperBase):
     pass
 
 
-class GenTech(SiteBase):
+class Genesis(SiteBase):
     site_name = 'Genesis'
     base_url = 'https://gen-tech.breezy.hr/'
     scraper = GenesisScraper
