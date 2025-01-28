@@ -7,6 +7,7 @@ from bs4 import Tag
 from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.parsing_bases import JobParserWithTitleFiltering
 from src.scraping_and_parsing.scraping_bases import HttpxScraperBase
+from src.scraping_and_parsing.sites.site_base import SiteBase
 
 
 class GenTechJobParser(JobParserWithTitleFiltering):
@@ -71,3 +72,10 @@ class GenTechJobParser(JobParserWithTitleFiltering):
 
 class GenTechScraper(HttpxScraperBase):
     pass
+
+
+class GenTech(SiteBase):
+    site_name = 'Genesis'
+    base_url = 'https://gen-tech.breezy.hr/'
+    scraper = GenTechScraper
+    parser = GenTechJobParser

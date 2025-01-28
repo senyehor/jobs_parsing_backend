@@ -9,6 +9,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.parsing_bases import JobParser
 from src.scraping_and_parsing.scraping_bases import SeleniumScraperBase
+from src.scraping_and_parsing.sites.site_base import SiteBase
 
 
 class DouParser(JobParser):
@@ -73,3 +74,10 @@ class DouSeleniumScraper(SeleniumScraperBase):
             except Exception as e:  # todo think of specific exceptions
                 print(f"Error during clicking load more button: {e}")
                 break
+
+
+class Dou(SiteBase):
+    site_name = 'Dou'
+    base_url = 'https://jobs.dou.ua/vacancies/'
+    scraper = DouSeleniumScraper
+    parser = DouParser
