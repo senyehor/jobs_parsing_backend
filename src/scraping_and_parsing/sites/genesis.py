@@ -9,6 +9,9 @@ from src.scraping_and_parsing.parsing_bases import JobParser
 from src.scraping_and_parsing.scraping_bases import HttpxScraperBase
 from src.scraping_and_parsing.sites.site_base import SiteBase
 
+_SITE_NAME = 'Genesis'
+_BASE_URL = 'https://gen-tech.breezy.hr/'
+
 
 class GenesisParser(JobParser):
     __LOCATION_CODES_MAPPING = {
@@ -19,8 +22,8 @@ class GenesisParser(JobParser):
         '%LABEL_POSITION_TYPE_FULL_TIME%': 'full-time',
         '%LABEL_POSITION_TYPE_PART_TIME%': 'part-time',
     }
-    __COMPANY_NAME = 'Genesis'
-    __BASE_URL = 'https://gen-tech.breezy.hr/'
+    __SITE_NAME = _SITE_NAME
+    __BASE_URL = _BASE_URL
 
     def parse_jobs(self, keywords: Iterable[str] | None = None) -> Iterable[JobPosting]:
         positions_container = self._soup.find('div', class_='positions-container')
@@ -38,7 +41,7 @@ class GenesisParser(JobParser):
                 JobPosting(
                     link=urljoin(self.__BASE_URL, href_to_job),
                     job_title=job_title,
-                    company_name=self.__COMPANY_NAME,
+                    company_name=self.__SITE_NAME,
                     location=location,
                     employment_type=employment_type
                 )
@@ -75,7 +78,7 @@ class GenesisScraper(HttpxScraperBase):
 
 
 class Genesis(SiteBase):
-    site_name = 'Genesis'
-    base_url = 'https://gen-tech.breezy.hr/'
+    site_name = _SITE_NAME
+    base_url = _BASE_URL
     scraper = GenesisScraper
     parser = GenesisParser
