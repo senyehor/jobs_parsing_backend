@@ -1,4 +1,4 @@
-from src.parsing.scraping.bases import HttpxScraperBase
+from src.parsing.scraping_bases import HttpxScraperBase
 
 
 class GenTechScraper(HttpxScraperBase):

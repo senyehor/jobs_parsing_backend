@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from src.parsing.scraping.bases import SeleniumScraperBase
+from src.parsing.scraping_bases import SeleniumScraperBase
 
 
 class DouSeleniumScraper(SeleniumScraperBase):
