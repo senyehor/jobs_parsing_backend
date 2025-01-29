@@ -39,14 +39,14 @@ class DouParser(JobParser):
 
 class DouSeleniumScraper(SeleniumScraperBase):
 
-    async def scrape(self) -> str | Iterable[str]:
+    async def scrape(self, url: str, keywords: list[str] | None = None) -> str | Iterable[str]:
         # todo handle non-existent keywords?
         urls = [
             urljoin(
-                self._url,
+                url,
                 f'?{urlencode({"category": keyword})}'  # creating q-parameters
             )
-            for keyword in self._keywords
+            for keyword in keywords
         ]
         pages = []
         for url in urls:
