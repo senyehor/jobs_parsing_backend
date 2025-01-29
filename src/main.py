@@ -32,10 +32,10 @@ async def root(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPos
         url = 'https://gen-tech.breezy.hr/'
         if isinstance(keywords, str):
             keywords = (keywords,)
-        scraper = GenesisScraper(client, url, keywords)
-        html = await scraper.scrape()
-        parser = GenesisParser(html, keywords)
-        return parser.parse_jobs()
+        scraper = GenesisScraper(client)
+        html = await scraper.scrape(url, keywords)
+        parser = GenesisParser(html)
+        return parser.parse_jobs(keywords)
 
 
 @app.get('/api/dou-by-category')
@@ -44,15 +44,15 @@ async def dou(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPost
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     if isinstance(keywords, str):
         keywords = (keywords,)
+    scraper = DouSeleniumScraper(driver=driver)
     try:
-        scraper = DouSeleniumScraper(url=url, driver=driver, keywords=keywords)
-        htmls = await scraper.scrape()
+        htmls = await scraper.scrape(url, keywords)
         if isinstance(htmls, str):
             htmls = (htmls,)
         jobs = []
         for html in htmls:
             parser = DouParser(html)
-            jobs.extend(parser.parse_jobs())
+            jobs.extend(parser.parse_jobs(keywords))
         return jobs
     finally:
         driver.quit()
