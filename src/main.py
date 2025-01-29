@@ -27,11 +27,9 @@ app.add_middleware(
 
 
 @app.get("/api/get-jobs")
-async def root(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPosting]:
+async def root(keywords: Annotated[list[str], Query()]) -> Iterable[JobPosting]:
     async with AsyncClient() as client:
         url = 'https://gen-tech.breezy.hr/'
-        if isinstance(keywords, str):
-            keywords = (keywords,)
         scraper = GenesisScraper(client)
         html = await scraper.scrape(url, keywords)
         parser = GenesisParser(html)
@@ -39,11 +37,9 @@ async def root(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPos
 
 
 @app.get('/api/dou-by-category')
-async def dou(keywords: Annotated[list[str] | str, Query()]) -> Iterable[JobPosting]:
+async def dou(keywords: Annotated[list[str], Query()]) -> Iterable[JobPosting]:
     url = f'https://jobs.dou.ua/vacancies/'
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    if isinstance(keywords, str):
-        keywords = (keywords,)
     scraper = DouSeleniumScraper(driver=driver)
     try:
         htmls = await scraper.scrape(url, keywords)
