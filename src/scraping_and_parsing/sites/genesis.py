@@ -80,5 +80,5 @@ class GenesisScraper(HttpxScraperBase):
 class Genesis(SiteBase):
     site_name = _SITE_NAME
     base_url = _BASE_URL
-    scraper = GenesisScraper
-    parser = GenesisParser
+    scraper_class = GenesisScraper
+    parser_class = GenesisParser
