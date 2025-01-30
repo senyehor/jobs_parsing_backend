@@ -20,17 +20,17 @@ class HttpxScraperBase(HtmlScraperBase):
         self._client = client
 
     async def scrape(self, base_url: str, keywords: list[str] | None = None) -> str | Iterable[str]:
-        return await self._query_page(base_url)
-
-    async def _query_page(self, url: str):
         try:
-            response = await self._client.get(url)
-            response.raise_for_status()
-            return response.text
+            return await self._query_page(base_url)
         except (RequestError, HTTPStatusError) as e:
             raise ExceptionWithMessageForUser(
-                message_for_user=f'Failed to fetch data from url: "f{url}"'
+                message_for_user=f'Failed to fetch data from url: "f{base_url}"'
             ) from e
+
+    async def _query_page(self, url: str):
+        response = await self._client.get(url)
+        response.raise_for_status()
+        return response.text
 
 
 class SeleniumScraperBase(HtmlScraperBase, ABC):
