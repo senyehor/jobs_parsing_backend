@@ -19,7 +19,10 @@ class HttpxScraperBase(HtmlScraperBase):
     def __init__(self, client: AsyncClient):
         self._client = client
 
-    async def scrape(self, url: str, keywords: list[str] | None = None) -> str | Iterable[str]:
+    async def scrape(self, base_url: str, keywords: list[str] | None = None) -> str | Iterable[str]:
+        return await self._query_page(base_url)
+
+    async def _query_page(self, url: str):
         try:
             response = await self._client.get(url)
             response.raise_for_status()
