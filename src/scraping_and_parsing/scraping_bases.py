@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Iterable
 
 from httpx import AsyncClient, HTTPStatusError
+from playwright.async_api import Browser
 from selenium.webdriver.chrome.webdriver import WebDriver
 from urllib3.exceptions import RequestError
 
@@ -36,3 +37,8 @@ class HttpxScraperBase(HtmlScraperBase):
 class SeleniumScraperBase(HtmlScraperBase, ABC):
     def __init__(self, driver: WebDriver):
         self._driver = driver
+
+
+class PlayWrightScraperBase(HtmlScraperBase, ABC):
+    def __init__(self, browser: Browser):
+        self._browser = browser
