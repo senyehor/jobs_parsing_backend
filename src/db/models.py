@@ -6,6 +6,8 @@ from src.db.engine import Base
 
 class JobSite(Base):
     __tablename__ = 'job_sites'
-    id: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255))
+    slug: Mapped[str] = mapped_column(unique=True)
     description: Mapped[str] = mapped_column(String(255 * 5))
+    link: Mapped[str] = mapped_column(String(255))
