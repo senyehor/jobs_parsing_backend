@@ -7,7 +7,7 @@ from src.exceptions import ExceptionWithMessageForUser
 from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.parsing_bases import JobParser
 from src.scraping_and_parsing.scraping_bases import PlayWrightScraperBase
-from src.scraping_and_parsing.sites import SiteBase
+from src.scraping_and_parsing.sites.site_base import SiteBase
 
 _BASE_URL = 'https://robota.ua/'
 
