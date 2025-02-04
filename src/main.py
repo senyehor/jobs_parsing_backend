@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from src.jobs.router import router as jobs_router
 from src.scraping_and_parsing.models import JobPosting
-from src.scraping_and_parsing.sites import HTTPX_BASED_SITES, SELENIUM_BASED_SITES
+from src.scraping_and_parsing.sites import HTTPX_SITES, SELENIUM_SITES
 
 origins = [
     "http://localhost:3000",
@@ -31,7 +31,7 @@ app.include_router(jobs_router, prefix='api/')
 @app.get('/api/all-sites/')
 async def all_sites(keywords: Annotated[list[str], Query()]) -> Iterable[JobPosting]:
     jobs = []
-    for site in SELENIUM_BASED_SITES:
+    for site in SELENIUM_SITES:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         scraper = site.scraper_class(driver=driver)
         try:
@@ -44,7 +44,7 @@ async def all_sites(keywords: Annotated[list[str], Query()]) -> Iterable[JobPost
         finally:
             driver.quit()
     async with AsyncClient() as client:
-        for site in HTTPX_BASED_SITES:
+        for site in HTTPX_SITES:
             scraper = site.scraper_class(client)
             htmls = await scraper.scrape(site.base_url, keywords)
             if isinstance(htmls, str):
