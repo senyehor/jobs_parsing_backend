@@ -80,4 +80,4 @@ class RobotaUA(SiteBase):
     slug = 'robotaua'
     base_url = _BASE_URL
     scraper_class = RobotaUAScraper
-    parser_class = 'DouParser'
+    parser_class = RobotaUAParser
