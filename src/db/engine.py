@@ -10,4 +10,10 @@ def create_engine(db_url: str = db_config.DATABASE_URL_asyncpg) -> AsyncEngine:
 
 SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=create_engine())
 
+
+async def create_db():
+    async with SessionLocal() as session:
+        yield session
+
+
 Base = declarative_base()
