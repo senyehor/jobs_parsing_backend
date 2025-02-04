@@ -78,7 +78,7 @@ class GenesisScraper(HttpxScraperBase):
 
 
 class Genesis(SiteBase):
-    site_name = _SITE_NAME
+    slug = _SITE_NAME.lower()
     base_url = _BASE_URL
     scraper_class = GenesisScraper
     parser_class = GenesisParser

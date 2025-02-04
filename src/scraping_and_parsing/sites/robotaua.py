@@ -77,7 +77,7 @@ class RobotaUAParser(JobParser):
 
 
 class RobotaUA(SiteBase):
-    site_name = 'robota.ua'
+    slug = 'robotaua'
     base_url = _BASE_URL
     scraper_class = RobotaUAScraper
     parser_class = 'DouParser'

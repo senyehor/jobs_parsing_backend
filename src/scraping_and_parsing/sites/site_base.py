@@ -7,7 +7,7 @@ from src.scraping_and_parsing.scraping_bases import (
 
 
 class SiteBase(ABC):
-    site_name: str
+    slug: str
     base_url: str
     parser_class: type[JobParser]
     scraper_class: type[HtmlScraperBase]

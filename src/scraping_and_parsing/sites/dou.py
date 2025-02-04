@@ -77,7 +77,7 @@ class DouSeleniumScraper(SeleniumScraperBase):
 
 
 class Dou(SiteBase):
-    site_name = 'Dou'
+    slug = 'dou'
     base_url = 'https://jobs.dou.ua/vacancies/'
     scraper_class = DouSeleniumScraper
     parser_class = DouParser
