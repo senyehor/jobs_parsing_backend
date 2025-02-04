@@ -7,10 +7,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+from src.jobs.router import router as jobs_router
 from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.sites import HTTPX_BASED_SITES, SELENIUM_BASED_SITES
-from src.scraping_and_parsing.sites.dou import DouParser, DouSeleniumScraper
-from src.scraping_and_parsing.sites.genesis import GenesisParser, GenesisScraper
 
 origins = [
     "http://localhost:3000",
@@ -26,6 +25,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(jobs_router, prefix='api/')
 
 
 @app.get('/api/all-sites/')
@@ -53,31 +53,3 @@ async def all_sites(keywords: Annotated[list[str], Query()]) -> Iterable[JobPost
                 parser = site.parser_class(html)
                 jobs.extend(parser.parse_jobs(keywords))
     return jobs
-
-
-@app.get("/api/get-jobs")
-async def root(keywords: Annotated[list[str], Query()]) -> Iterable[JobPosting]:
-    async with AsyncClient() as client:
-        url = 'https://gen-tech.breezy.hr/'
-        scraper = GenesisScraper(client)
-        html = await scraper.scrape(url, keywords)
-        parser = GenesisParser(html)
-        return parser.parse_jobs(keywords)
-
-
-@app.get('/api/dou-by-category')
-async def dou(keywords: Annotated[list[str], Query()]) -> Iterable[JobPosting]:
-    url = f'https://jobs.dou.ua/vacancies/'
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    scraper = DouSeleniumScraper(driver=driver)
-    try:
-        htmls = await scraper.scrape(url, keywords)
-        if isinstance(htmls, str):
-            htmls = (htmls,)
-        jobs = []
-        for html in htmls:
-            parser = DouParser(html)
-            jobs.extend(parser.parse_jobs(keywords))
-        return jobs
-    finally:
-        driver.quit()
