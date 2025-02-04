@@ -62,7 +62,10 @@ class RobotaUAParser(JobParser):
                 'div',
                 class_=['santa-flex', 'santa-justify-between']
             )
-            spans = div_with_company_name_and_location.find_all('span')
+            d2 = div_with_company_name_and_location.select(
+                'div.santa-flex.santa-justify-between'
+            )[0]
+            spans = d2.find_all('span')
             company_name = spans[0].get_text(strip=True)
             location = spans[1].get_text(strip=True)
             jobs_list.append(
