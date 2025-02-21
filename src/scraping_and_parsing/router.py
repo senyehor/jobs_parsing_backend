@@ -35,7 +35,7 @@ async def scrape_job_postings(
                 job_postings.extend(parser.parse_jobs(keywords))
     for site in playwright_sites:
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
+            browser = await p.chromium.launch(headless=False)
             try:
                 scraper = site.scraper_class(browser)
                 htmls = await scraper.scrape(site.base_url, keywords)

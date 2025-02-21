@@ -30,13 +30,13 @@ class GenesisParser(JobParser):
         jobs_containers = positions_container.find_all('li', class_='position transition')
         jobs = []
         for job in jobs_containers:
-            last_a_tag = job.find_all('a')[-1]
-            job_title = last_a_tag.find(re.compile(r'h[1-6]')).text.strip()
+            job_title = job.find(re.compile(r'h[1-6]')).get_text(strip=True)
             if not self.__check_title_for_keywords(job_title, keywords or []):
                 continue
+            last_a_tag = job.find_all('a')[-1]
             href_to_job = last_a_tag.get('href')
-            location = self.__extract_location(last_a_tag)
-            employment_type = self.__extract_employment_type(last_a_tag)
+            location = self.__extract_location(job)
+            employment_type = self.__extract_employment_type(job)
             jobs.append(
                 JobPosting(
                     link=urljoin(self.__BASE_URL, href_to_job),
