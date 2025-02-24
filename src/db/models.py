@@ -18,4 +18,4 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(255), unique=True)
     name: Mapped[str] = mapped_column(String(255))
-    google_subject_id: Mapped[int] = mapped_column(unique=True)
+    google_subject_id: Mapped[str] = mapped_column(unique=True)
