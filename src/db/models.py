@@ -11,3 +11,11 @@ class JobSite(Base):
     slug: Mapped[str] = mapped_column(unique=True)
     description: Mapped[str] = mapped_column(String(255 * 5))
     link: Mapped[str] = mapped_column(String(255))
+
+
+class User(Base):
+    __tablename__ = 'users'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True)
+    name: Mapped[str] = mapped_column(String(255))
+    google_subject_id: Mapped[int] = mapped_column(unique=True)
