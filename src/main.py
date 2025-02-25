@@ -12,7 +12,8 @@ from src.config import OAUTH_CONFIG
 from src.db.engine import create_db
 from src.jobs.router import router as jobs_router
 from src.scraping_and_parsing.router import router as scraping_router
-from src.users.logic import register_user_if_not_already
+from src.users.logic import register_or_get_user
+from src.users.models import User
 
 origins = [
     "http://localhost:3000",
@@ -63,18 +64,18 @@ async def login(request: Request):
 
 
 @app.get("/auth/callback")
-async def auth_callback(request: Request, db: AsyncSession = Depends(create_db)):
+async def auth_callback(request: Request, db: AsyncSession = Depends(create_db)) -> User:
     token = await oauth.google.authorize_access_token(request)
     nonce = request.session.pop("nonce", None)
-    user = await oauth.google.parse_id_token(token, nonce)
-    await register_user_if_not_already(
+    google_user = await oauth.google.parse_id_token(token, nonce)
+    db_user = await register_or_get_user(
         db,
-        email=user['email'],
-        name=user['given_name'],
-        google_subject_id=user['sub']
+        email=google_user['email'],
+        name=google_user['given_name'],
+        google_subject_id=google_user['sub']
     )
-    request.session["user"] = user
-    return user
+    request.session["user_id"] = db_user.id
+    return db_user
 
 
 @app.get("/logout")
