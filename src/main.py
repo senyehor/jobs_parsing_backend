@@ -12,7 +12,7 @@ from src.config import OAUTH_CONFIG
 from src.db.engine import create_db
 from src.jobs.router import router as jobs_router
 from src.scraping_and_parsing.router import router as scraping_router
-from src.users.logic import add_user
+from src.users.logic import register_user_if_not_already
 
 origins = [
     "http://localhost:3000",
@@ -67,7 +67,7 @@ async def auth_callback(request: Request, db: AsyncSession = Depends(create_db))
     token = await oauth.google.authorize_access_token(request)
     nonce = request.session.pop("nonce", None)
     user = await oauth.google.parse_id_token(token, nonce)
-    await add_user(
+    await register_user_if_not_already(
         db,
         email=user['email'],
         name=user['given_name'],

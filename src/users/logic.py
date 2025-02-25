@@ -4,7 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.models import User
 
 
-async def add_user(db: AsyncSession, email: str, name: str, google_subject_id: int):
+async def register_user_if_not_already(
+        db: AsyncSession, email: str, name: str,
+        google_subject_id: int
+):
     existing_user = await db.execute(select(User).where(User.email == email))
     if existing_user.all():
         # todo maybe exception
