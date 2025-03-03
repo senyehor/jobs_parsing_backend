@@ -9,14 +9,21 @@ from urllib3.exceptions import RequestError
 from src.exceptions import ExceptionWithMessageForUser
 
 
-class HtmlScraperBase(ABC):
+class HtmlScraperBaseAsync(ABC):
 
     @abstractmethod
     async def scrape(self, url: str, keywords: list[str] | None = None) -> str | Iterable[str]:
         pass
 
 
-class HttpxScraperBase(HtmlScraperBase):
+class HtmlScraperBaseSync(ABC):
+
+    @abstractmethod
+    def scrape(self, url: str, keywords: list[str] | None = None) -> str | Iterable[str]:
+        pass
+
+
+class HttpxScraperBase(HtmlScraperBaseAsync):
     def __init__(self, client: AsyncClient):
         self._client = client
 
@@ -34,11 +41,11 @@ class HttpxScraperBase(HtmlScraperBase):
         return response.text
 
 
-class SeleniumScraperBase(HtmlScraperBase, ABC):
+class SeleniumScraperBase(HtmlScraperBaseSync, ABC):
     def __init__(self, driver: WebDriver):
         self._driver = driver
 
 
-class PlayWrightScraperBase(HtmlScraperBase, ABC):
+class PlayWrightScraperBase(HtmlScraperBaseAsync, ABC):
     def __init__(self, browser: Browser):
         self._browser = browser
