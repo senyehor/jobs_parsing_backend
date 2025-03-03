@@ -1,7 +1,10 @@
 from asyncio import sleep
+from logging import getLogger
+from time import sleep
 from typing import Iterable
 from urllib.parse import urlencode, urljoin
 
+from selenium.common import ElementNotInteractableException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -10,6 +13,8 @@ from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.parsing_bases import JobParser
 from src.scraping_and_parsing.scraping_bases import SeleniumScraperBase
 from src.scraping_and_parsing.sites.site_base import SiteBase
+
+logger = getLogger(__name__)
 
 
 class DouParser(JobParser):
@@ -39,7 +44,7 @@ class DouParser(JobParser):
 
 class DouSeleniumScraper(SeleniumScraperBase):
 
-    async def scrape(self, url: str, keywords: list[str] | None = None) -> str | Iterable[str]:
+    def scrape(self, url: str, keywords: list[str] | None = None) -> str | Iterable[str]:
         # todo handle non-existent keywords?
         urls = [
             urljoin(
@@ -51,11 +56,11 @@ class DouSeleniumScraper(SeleniumScraperBase):
         pages = []
         for url in urls:
             self._driver.get(url)
-            await self.__load_all_jobs()
+            self.__load_all_jobs()
             pages.append(self._driver.page_source)
         return pages if len(pages) > 1 else pages[0]
 
-    async def __load_all_jobs(self):
+    def __load_all_jobs(self):
         while True:
             try:
                 load_more_button = WebDriverWait(self._driver, 10).until(
@@ -64,15 +69,16 @@ class DouSeleniumScraper(SeleniumScraperBase):
                     )
                 )
                 if load_more_button.is_displayed():
+                    sleep(1)  # give browser some time to render, clicks on a job posting otherwise
                     load_more_button.click()
-                    # give the browser some time to render,
-                    # clicks on a job posting otherwise
-                    await sleep(1)
                 else:
                     break
 
-            except Exception as e:  # todo think of specific exceptions
-                print(f"Error during clicking load more button: {e}")
+            except ElementNotInteractableException:
+                # expected behavior, signaling all jobs were loaded
+                break
+            except Exception as e:
+                logger.error('Failed to load all dou jobs', e)
                 break
 
 
