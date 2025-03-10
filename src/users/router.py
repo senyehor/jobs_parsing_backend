@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.config import Config
 from starlette.responses import RedirectResponse
 
-from src.config import OAUTH_CONFIG
 from src.db.engine import create_db
+from src.users.config import OAUTH_CONFIG
 from src.users.logic import register_or_get_user
 from src.users.models import User
 

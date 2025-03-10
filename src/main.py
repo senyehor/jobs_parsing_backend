@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.config import OAUTH_CONFIG
 from src.jobs.router import router as jobs_router
 from src.scraping_and_parsing.router import router as scraping_router
+from src.users.config import OAUTH_CONFIG
 from src.users.router import router as users_router
 
 origins = [
