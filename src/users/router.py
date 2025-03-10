@@ -53,11 +53,11 @@ async def auth_callback(request: Request, db: AsyncSession = Depends(create_db))
         name=google_user['given_name'],
         google_subject_id=google_user['sub']
     )
-    request.session["user_id"] = db_user.id
+    request.session['user_id'] = db_user.id
     return db_user
 
 
 @router.get("/logout")
 async def logout(request: Request):
-    request.session.pop("user", None)
-    return RedirectResponse("/")
+    request.session.pop('user', None)
+    return RedirectResponse('/')
