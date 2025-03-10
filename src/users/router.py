@@ -1,15 +1,15 @@
 import secrets
 
 from authlib.integrations.starlette_client import OAuth
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.config import Config
 from starlette.responses import RedirectResponse
 
+from src.config import APP_CONFIG
 from src.db.engine import create_db
 from src.users.config import OAUTH_CONFIG
 from src.users.logic import register_or_get_user
-from src.users.models import User
 
 router = APIRouter()
 
@@ -43,7 +43,7 @@ async def login(request: Request):
 
 
 @router.get("/auth/callback")
-async def auth_callback(request: Request, db: AsyncSession = Depends(create_db)) -> User:
+async def auth_callback(request: Request, db: AsyncSession = Depends(create_db)):
     token = await oauth.google.authorize_access_token(request)
     nonce = request.session.pop("nonce", None)
     google_user = await oauth.google.parse_id_token(token, nonce)
@@ -54,10 +54,10 @@ async def auth_callback(request: Request, db: AsyncSession = Depends(create_db))
         google_subject_id=google_user['sub']
     )
     request.session['user_id'] = db_user.id
-    return db_user
+    return RedirectResponse(APP_CONFIG.FRONTEND_URL, status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/logout")
 async def logout(request: Request):
     request.session.pop('user', None)
-    return RedirectResponse('/')
+    return RedirectResponse(APP_CONFIG.FRONTEND_URL, status_code=status.HTTP_303_SEE_OTHER)
