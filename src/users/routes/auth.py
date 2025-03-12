@@ -1,16 +1,17 @@
 import secrets
 
 from authlib.integrations.starlette_client import OAuth
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 from starlette.config import Config
+from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
 from src.config import APP_CONFIG
 from src.db.engine import create_db
 from src.users.config import OAUTH_CONFIG
-from src.users.logic import get_user_by_id, register_or_get_user
-from src.users.models import User
+from src.users.logic import register_or_get_user
 
 router = APIRouter()
 
@@ -58,14 +59,7 @@ async def auth_callback(request: Request, db: AsyncSession = Depends(create_db))
     return RedirectResponse(APP_CONFIG.FRONTEND_URL, status_code=status.HTTP_303_SEE_OTHER)
 
 
-@router.get("users/logout")
+@router.post("/users/logout")
 async def logout(request: Request):
     request.session.pop('user_id', None)
-    return RedirectResponse(APP_CONFIG.FRONTEND_URL, status_code=status.HTTP_303_SEE_OTHER)
-
-
-@router.post('/users/me')
-async def me(request: Request, db: AsyncSession = Depends(create_db)) -> User:
-    if user := await get_user_by_id(db, request.session.get('user_id', None)):
-        return user
-    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    return Response(status_code=status.HTTP_200_OK)

@@ -5,7 +5,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from src.jobs.router import router as jobs_router
 from src.scraping_and_parsing.router import router as scraping_router
 from src.users.config import OAUTH_CONFIG
-from src.users.router import router as users_router
+from src.users.routes import router as users_router
 
 origins = [
     "http://localhost:3000",
