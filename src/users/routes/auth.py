@@ -9,7 +9,7 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
 from src.config import APP_CONFIG
-from src.db.engine import create_db
+from src.db.engine import create_session
 from src.users.config import OAUTH_CONFIG
 from src.users.logic import register_or_get_user
 
@@ -45,7 +45,7 @@ async def login(request: Request):
 
 
 @router.get("/auth/callback")
-async def auth_callback(request: Request, db: AsyncSession = Depends(create_db)):
+async def auth_callback(request: Request, db: AsyncSession = Depends(create_session)):
     token = await oauth.google.authorize_access_token(request)
     nonce = request.session.pop("nonce", None)
     google_user = await oauth.google.parse_id_token(token, nonce)
