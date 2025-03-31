@@ -1,4 +1,5 @@
 import re
+from logging import getLogger
 from typing import Iterable
 from urllib.parse import urljoin
 
@@ -8,6 +9,10 @@ from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.parsing_bases import JobParser
 from src.scraping_and_parsing.scraping_bases import HttpxScraperBase
 from src.scraping_and_parsing.sites.site_base import SiteBase
+from src.scraping_and_parsing.sites.utils.return_none_on_exception import \
+    return_none_on_exception_and_log
+
+logger = getLogger(__name__)
 
 _SITE_NAME = 'Genesis'
 _BASE_URL = 'https://gen-tech.breezy.hr/'
@@ -48,6 +53,7 @@ class GenesisParser(JobParser):
             )
         return jobs
 
+    @return_none_on_exception_and_log('Failed to extract location', logger)
     def __extract_location(self, outer_tag: Tag) -> Iterable[str] | str:
         spans = outer_tag.select('li.location span:not(.spacer)')
         locations = []
@@ -60,6 +66,7 @@ class GenesisParser(JobParser):
             locations.append(location)
         return locations if len(locations) > 1 else locations[0]
 
+    @return_none_on_exception_and_log('Failed to extract employment type', logger)
     def __extract_employment_type(self, outer_tag: Tag) -> str:
         employment_type = outer_tag.find('li', class_='type').find('span').text
         if employment_type in self.__EMPLOYMENT_TYPES_MAPPING:
