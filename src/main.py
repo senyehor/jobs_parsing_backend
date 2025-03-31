@@ -8,8 +8,8 @@ from src.users.config import OAUTH_CONFIG
 from src.users.routes import router as users_router
 
 origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
 ]
 
 app = FastAPI()
