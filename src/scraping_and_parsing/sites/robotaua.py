@@ -1,6 +1,8 @@
+from logging import getLogger
 from typing import Iterable, List
 from urllib.parse import urljoin
 
+from bs4 import Tag
 from playwright.async_api import Error, Page
 
 from src.exceptions import ExceptionWithMessageForUser
@@ -8,6 +10,10 @@ from src.scraping_and_parsing.models import JobPosting
 from src.scraping_and_parsing.parsing_bases import JobParser
 from src.scraping_and_parsing.scraping_bases import PlayWrightScraperBase
 from src.scraping_and_parsing.sites.site_base import SiteBase
+from src.scraping_and_parsing.sites.utils.return_none_on_exception import \
+    return_none_on_exception_and_log
+
+logger = getLogger(__name__)
 
 _BASE_URL = 'https://robota.ua/'
 
@@ -55,19 +61,17 @@ class RobotaUAParser(JobParser):
         jobs_container = self._soup.find('alliance-jobseeker-desktop-vacancies-list')
         job_divs = jobs_container.find_all('alliance-vacancy-card-desktop')
         jobs_list = []
-        for div_with_job_info in job_divs:
-            job_title = div_with_job_info.find('h2').get_text(strip=True)
-            job_link = urljoin(self.__BASE_URL, div_with_job_info.find('a').get('href'))
-            div_with_company_name_and_location = div_with_job_info.find(
-                'div',
-                class_=['santa-flex', 'santa-justify-between']
+        for job_container in job_divs:
+            job_title = job_container.find('h2').get_text(strip=True)
+            job_link = urljoin(self.__BASE_URL, job_container.find('a').get('href'))
+            div_with_vacancy_info = job_container.select_one(
+                '.santa-flex.santa-justify-between'
+            ).find('div')
+            div_with_company_name_and_location = div_with_vacancy_info.select_one(
+                '.santa-flex.santa-items-center'
             )
-            d2 = div_with_company_name_and_location.select(
-                'div.santa-flex.santa-justify-between'
-            )[0]
-            spans = d2.find_all('span')
-            company_name = spans[0].get_text(strip=True)
-            location = spans[1].get_text(strip=True)
+            company_name = self.__extract_company_name(div_with_company_name_and_location)
+            location = self.__extract_location(div_with_company_name_and_location)
             jobs_list.append(
                 JobPosting(
                     link=job_link,
@@ -77,6 +81,16 @@ class RobotaUAParser(JobParser):
                 )
             )
         return jobs_list
+
+    @return_none_on_exception_and_log('Failed to extract company name', logger)
+    def __extract_company_name(self, div_with_company_name_and_location: Tag):
+        spans = div_with_company_name_and_location.find_all('span', recursive=False)
+        return spans[0].get_text()
+
+    @return_none_on_exception_and_log('Failed to extract location', logger)
+    def __extract_location(self, div_with_company_name_and_location: Tag):
+        spans = div_with_company_name_and_location.find_all('span', recursive=False)
+        return spans[-1].get_text()
 
 
 class RobotaUA(SiteBase):
