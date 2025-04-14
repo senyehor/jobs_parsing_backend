@@ -10,7 +10,7 @@ from src.users.models import User
 router = APIRouter()
 
 
-@router.post('/users/me')
+@router.get('/users/me')
 async def me(request: Request, db: AsyncSession = Depends(create_session)) -> User:
     if user := await get_user_by_id(db, request.session.get('user_id', None)):
         return user
